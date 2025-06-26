@@ -44,6 +44,23 @@ class UserRepositoryTest {
 
     }
 
+    @Test
+    @DisplayName("Should NOT get user from DB when user not exists")
+    void NotfindUserByDocumentWhenUserNotExists() {
+
+        //Arrange
+        String document = "99999999901";
+        //UserDTO data = new UserDTO("Fernanda", "Teste", document, new BigDecimal(10), "test@email.com", "44444", UserType.COMMON);
+        //this.createUser(data);
+
+        //Act
+        Optional<User> result = this.userRepository.findUserByDocument(document);
+
+        //Assert
+        assertThat(result.isEmpty()).isTrue();
+
+    }
+
     private User createUser(UserDTO data) {
         User newUser = new User(data);
         this.entityManager.persist(newUser);
