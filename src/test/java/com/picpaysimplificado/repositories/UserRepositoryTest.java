@@ -29,7 +29,7 @@ class UserRepositoryTest {
 
     @Test
     @DisplayName("Should get user successfully from DB")
-    void findUserByDocumentSucces() {
+    void findUserByDocumentSuccess() {
 
         //Arrange
         String document = "99999999901";
@@ -46,7 +46,7 @@ class UserRepositoryTest {
 
     @Test
     @DisplayName("Should NOT get user from DB when user not exists")
-    void NotfindUserByDocumentWhenUserNotExists() {
+    void notFindUserByDocumentWhenUserNotExists() {
 
         //Arrange
         String document = "99999999901";
