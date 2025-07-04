@@ -125,6 +125,30 @@ class UserServiceTest {
             verifyNoInteractions(userRepository);
         }
 
+        @Test
+        @DisplayName("Should validate transaction when the balance is the same of the amount value")
+        void validateTransactionWhenBalanceIsSameAmountValue() {
+            //Arrange
+            Long id = 1L;
+            User sender = new User();
+            sender.setId(1L);
+            sender.setFirstname("First Name");
+            sender.setLastname("Last Name");
+            sender.setEmail("email@email.com");
+            sender.setBalance(new BigDecimal(20));
+            sender.setDocument("123456789");
+            sender.setUserType(UserType.COMMON);
+
+            BigDecimal amount = new BigDecimal(20); // The same of balance
+
+            //Act
+            assertDoesNotThrow(() -> userService.validateTransaction(sender, amount));
+
+            //Assert
+            verifyNoInteractions(userRepository);
+        }
+
+
     }
 
 
