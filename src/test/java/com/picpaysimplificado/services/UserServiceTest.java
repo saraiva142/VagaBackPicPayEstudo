@@ -53,7 +53,30 @@ class UserServiceTest {
             verifyNoInteractions(userRepository);
         }
 
+        @Test
+        @DisplayName("Should return error if sender is merchant type")
+        void validateTransactionIfSenderIsMechant() {
+            //Arrange
+            User sender = new User();
+            sender.setId(1L);
+            sender.setFirstname("First Name");
+            sender.setLastname("Last Name");
+            sender.setEmail("email@email.com");
+            sender.setBalance(new BigDecimal("100"));
+            sender.setDocument("123456789");
+            sender.setUserType(UserType.MERCHANT);
 
+            BigDecimal value = new BigDecimal(50);
+
+            //Act & Assert
+            Exception thrown = assertThrows(Exception.class, () -> {
+                userService.validateTransaction(sender, value);
+            });
+
+            assertEquals("Usuário do tipo lojista não está autorizado a realizar transação", thrown.getMessage());
+            verifyNoInteractions(userRepository);
+
+        }
 
     }
 
