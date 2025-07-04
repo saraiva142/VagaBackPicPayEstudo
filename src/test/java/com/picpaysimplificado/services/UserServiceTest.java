@@ -176,6 +176,23 @@ class UserServiceTest {
             assertEquals(expectedUser.getId(), foundUser.getId());
             assertEquals(expectedUser.getFirstname(), foundUser.getFirstname());
             verify(userRepository, times(1)).findUserById(id);
+        }
+
+        @Test
+        @DisplayName("Should return error message if user not found")
+        void findUserByIdWhenUserNotFound() {
+            //Arrange
+            Long id = 99L;
+
+            when(userRepository.findUserById(id)).thenReturn(Optional.empty());
+
+            //Act && Assert
+            Exception thrown = assertThrows(Exception.class, () -> {
+                userService.findUserById(id);
+            });
+
+            assertEquals("Usuário não encontrado", thrown.getMessage());
+            verify(userRepository, times(1)).findUserById(id);
 
         }
 
