@@ -57,4 +57,26 @@ class AuthorizationServiceTest {
         verify(restTemplate, times(1)).getForEntity("https://util.devi.tools/api/v2/authorize", Map.class);
     }
 
+    @Test
+    @DisplayName("Should return true when response is not OK")
+    void authorizationTransactionIsNotOkButReturnsTrue() {
+        //Arrange
+        User sender = new User();
+        sender.setId(1L);
+        sender.setBalance(new BigDecimal("100.00"));
+
+        BigDecimal value = new BigDecimal("10.00");
+
+        ResponseEntity<Map> responseEntity = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        when(restTemplate.getForEntity("https://util.devi.tools/api/v2/authorize", Map.class))
+                .thenReturn(responseEntity);
+
+        //Act
+        boolean result = authorizationService.authorizeTransaction(sender, value);
+
+        //Assert
+        assertTrue(result);
+        verify(restTemplate, times(1)).getForEntity("https://util.devi.tools/api/v2/authorize", Map.class);
+    }
 }
