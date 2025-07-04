@@ -101,6 +101,30 @@ class UserServiceTest {
             verifyNoInteractions(userRepository);
         }
 
+        @Test
+        @DisplayName("Should return exception if balance is zero and the transaction is positive")
+        void validateTransactionIfBalanceIsZeroAndTransactionIsPositive() {
+            //Arrange
+            Long id = 1L;
+            User sender = new User();
+            sender.setId(1L);
+            sender.setFirstname("First Name");
+            sender.setLastname("Last Name");
+            sender.setEmail("email@email.com");
+            sender.setBalance(BigDecimal.ZERO);
+            sender.setDocument("123456789");
+            sender.setUserType(UserType.COMMON);
+
+            BigDecimal amount = new BigDecimal(20); // Positive Transaction
+
+            //Act & Assert
+            Exception thrown = assertThrows(Exception.class, () -> {
+                userService.validateTransaction(sender, amount);
+            });
+            assertEquals("Saldo insuficiente", thrown.getMessage());
+            verifyNoInteractions(userRepository);
+        }
+
     }
 
 
