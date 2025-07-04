@@ -13,9 +13,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -147,14 +148,39 @@ class UserServiceTest {
             //Assert
             verifyNoInteractions(userRepository);
         }
+    }
 
+    @Nested
+    class findUserById {
+        @Test
+        @DisplayName("Should find a user by Id successfully")
+        void findUserByIdWithSuccess() throws Exception {
+            //Arrange
+            Long id = 1L;
+            User expectedUser = new User();
+            expectedUser.setId(1L);
+            expectedUser.setFirstname("First Name");
+            expectedUser.setLastname("Last Name");
+            expectedUser.setEmail("email@email.com");
+            expectedUser.setBalance(new BigDecimal(100));
+            expectedUser.setDocument("123456789");
+            expectedUser.setUserType(UserType.COMMON);
+
+            when(userRepository.findUserById(id)).thenReturn(Optional.of(expectedUser));
+
+            //Act
+            User foundUser = userService.findUserById(id);
+
+            //Assert
+            assertNotNull(foundUser);
+            assertEquals(expectedUser.getId(), foundUser.getId());
+            assertEquals(expectedUser.getFirstname(), foundUser.getFirstname());
+            verify(userRepository, times(1)).findUserById(id);
+
+        }
 
     }
 
-
-    @Test
-    void findUserById() {
-    }
 
     @Test
     void createUser() {
