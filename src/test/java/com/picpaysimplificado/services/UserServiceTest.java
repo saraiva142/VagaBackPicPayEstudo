@@ -75,7 +75,30 @@ class UserServiceTest {
 
             assertEquals("Usuário do tipo lojista não está autorizado a realizar transação", thrown.getMessage());
             verifyNoInteractions(userRepository);
+        }
 
+        @Test
+        @DisplayName("Should return error if the amount value is not enough")
+        void validateTransactionIfAmountIsNotEnough() {
+            //Arrange
+            Long id = 1L;
+            User sender = new User();
+            sender.setId(1L);
+            sender.setFirstname("First Name");
+            sender.setLastname("Last Name");
+            sender.setEmail("email@email.com");
+            sender.setBalance(new BigDecimal("20"));
+            sender.setDocument("123456789");
+            sender.setUserType(UserType.COMMON);
+
+            BigDecimal value = new BigDecimal(50);
+
+            //Act && Assert
+            Exception thrown = assertThrows(Exception.class, () -> {
+                userService.validateTransaction(sender, value);
+            });
+            assertEquals("Saldo insuficiente", thrown.getMessage());
+            verifyNoInteractions(userRepository);
         }
 
     }
