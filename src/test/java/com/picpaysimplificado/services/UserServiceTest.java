@@ -2,12 +2,14 @@ package com.picpaysimplificado.services;
 
 import com.picpaysimplificado.domain.user.User;
 import com.picpaysimplificado.domain.user.UserType;
+import com.picpaysimplificado.dtos.UserDTO;
 import com.picpaysimplificado.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -193,14 +195,54 @@ class UserServiceTest {
 
             assertEquals("Usuário não encontrado", thrown.getMessage());
             verify(userRepository, times(1)).findUserById(id);
-
         }
-
     }
 
+    @Nested
+    class createUser {
 
-    @Test
-    void createUser() {
+        @Test
+        @DisplayName("Should create some user with success")
+        void createUserWithSuccess() {
+            //I will do this with DTO already
+            UserDTO user = new UserDTO(
+                    "Ana",
+                    "Teste",
+                    "123456789",
+                    new BigDecimal(100),
+                    "ana@email.com",
+                    "senha123",
+                    UserType.COMMON
+            );
+
+            ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+
+            when(userRepository.save(userCaptor.capture())).thenAnswer(invocation -> {
+                User userBeingSaved = invocation.getArgument(0);
+                // Simula que o repositório atribuiu um ID (como faria um banco de dados real)
+                if (userBeingSaved.getId() == null) {
+                    userBeingSaved.setId(1L); // Atribui um ID de exemplo
+                }
+                return userBeingSaved;
+            });
+
+            //Act
+            User createdUser = userService.createUser(user);
+
+            //Assert
+            User savedUser = userCaptor.getValue();
+
+            assertNotNull(createdUser);
+            assertNotNull(createdUser.getId());
+            assertEquals(savedUser.getFirstname(), createdUser.getFirstname());
+            assertEquals(savedUser.getLastname(), createdUser.getLastname());
+            assertEquals(savedUser.getDocument(), createdUser.getDocument());
+            assertEquals(savedUser.getEmail(), createdUser.getEmail());
+            assertEquals(savedUser.getBalance(), createdUser.getBalance());
+            assertEquals(savedUser.getPassword(), createdUser.getPassword());
+            assertEquals(savedUser.getUserType(), createdUser.getUserType());
+        }
+
     }
 
     @Test
