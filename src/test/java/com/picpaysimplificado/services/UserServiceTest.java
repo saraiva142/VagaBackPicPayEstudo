@@ -284,6 +284,23 @@ class UserServiceTest {
             assertEquals(userList.size(), result.size());
         }
 
+        @Test
+        @DisplayName("Should return error when user list is empty")
+        void getAllUsersWithErrorWhenUsersIsEmpty() {
+            //Arrange
+            List<User> userList = Arrays.asList();
+
+            when(userService.getAllUsers()).thenReturn(userList);
+
+            //Act
+            var result = userService.getAllUsers();
+
+            //Assert
+            assertTrue(result.isEmpty());
+            assertEquals(0, result.size());
+
+        }
+
     }
 
 
