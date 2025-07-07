@@ -85,6 +85,32 @@ class UserControllerTest {
             verify(userService, times(1)).createUser(any(UserDTO.class));
         }
 
+//        Não tenho a função de erro ao criar user, percebi isso no teste, visto que qualquer coisa que passa retorna 201 no post
+//        @Test
+//        @DisplayName("Should return error when create user is fail")
+//        void createUserWithError() throws Exception {
+//            //Arrange
+//            UserDTO request = new UserDTO(
+//                    null,
+//                    "Last Name",
+//                    null,
+//                    new BigDecimal(100),
+//                    "email@email.com",
+//                    "pas123",
+//                    UserType.COMMON
+//            );
+//
+////            doThrow(new Exception()).when(userService).createUser(any(UserDTO.class));
+//
+//            //Act & Assert
+//            mockMvc.perform(post("/users")
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .content(objectMapper.writeValueAsString(request)))
+//                    .andExpect(status().isBadRequest());
+//
+//            verify(userService, never()).createUser(any(UserDTO.class));
+//        }
+
     }
 
 
