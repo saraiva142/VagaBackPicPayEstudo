@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -245,9 +247,45 @@ class UserServiceTest {
 
     }
 
-    @Test
-    void getAllUsers() {
+    @Nested
+    class getAllUsers {
+        @Test
+        @DisplayName("Should return all users successfully")
+        void getAllUsersWithSuccess() {
+            //Arrange
+            Long id = 1L;
+            User user1 = new User();
+            user1.setId(id);
+            user1.setFirstname("First name");
+            user1.setLastname("Last name");
+            user1.setEmail("email@email.com");
+            user1.setBalance(new BigDecimal(100));
+            user1.setDocument("123456789");
+            user1.setUserType(UserType.COMMON);
+
+            User user2 = new User();
+            user2.setId(id);
+            user2.setFirstname("First Name");
+            user2.setLastname("Last Name");
+            user2.setEmail("email@email.com");
+            user2.setBalance(new BigDecimal(20));
+            user2.setDocument("123456789");
+            user2.setUserType(UserType.COMMON);
+
+            List<User> userList = Arrays.asList(user1, user2);
+
+            when(userService.getAllUsers()).thenReturn(userList);
+
+            //Act
+            var result = userService.getAllUsers();
+
+            //Arrange
+            assertNotNull(result);
+            assertEquals(userList.size(), result.size());
+        }
+
     }
+
 
     @Test
     void saveUser() {
