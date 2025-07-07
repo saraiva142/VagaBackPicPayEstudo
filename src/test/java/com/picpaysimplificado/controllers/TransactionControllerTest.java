@@ -87,4 +87,25 @@ class TransactionControllerTest {
 
         verify(transactionService, times(1)).createTransaction(any(TransactionDTO.class));
     }
+
+    @Test
+    @DisplayName("Should return 500 when transactions creation fails")
+    void createTransactionFailAndReturnError500() throws Exception {
+        //Arrange
+        TransactionDTO request = new TransactionDTO(
+                new BigDecimal(1000),
+                1L,
+                2L
+        );
+
+        doThrow(new Exception("error")).when(transactionService).createTransaction(any(TransactionDTO.class));
+
+        //Act & Assert
+        mockMvc.perform(post("/transactions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isInternalServerError());
+
+        verify(transactionService, times(1)).createTransaction(any(TransactionDTO.class));
+    }
 }
