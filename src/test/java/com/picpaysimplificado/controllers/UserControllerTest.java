@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -114,6 +115,45 @@ class UserControllerTest {
 //
 //            verify(userService, never()).createUser(any(UserDTO.class));
 //        }
+
+        @Test
+        @DisplayName("Should return message error when user already exist")
+        void createUserWhenUserAlreadyExist() throws Exception {
+            //Arrange
+            Long id = 1L;
+            UserDTO requestDTO = new UserDTO(
+                    "First Name",
+                    "Last Name",
+                    "123456789",
+                    new BigDecimal(19),
+                    "email@email.com",
+                    "pass123",
+                    UserType.COMMON
+            );
+
+            User sameUser = new User();
+            sameUser.setId(id);
+            sameUser.setFirstname(requestDTO.firstName());
+            sameUser.setLastname(requestDTO.lastName());
+            sameUser.setDocument(requestDTO.document());
+            sameUser.setBalance(requestDTO.balance());
+            sameUser.setEmail(requestDTO.email());
+            sameUser.setPassword(requestDTO.password());
+            sameUser.setUserType(requestDTO.userType());
+
+            doThrow(new DataIntegrityViolationException("Usuário já cadastrado"))
+                    .when(userService).createUser(any(UserDTO.class));
+
+            //Act & Assert
+            mockMvc.perform(post("/users")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(sameUser)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("Usuário já cadastrado"))
+                    .andExpect(jsonPath("$.statusCode").value("400"));
+
+            verify(userService, times(1)).createUser(any(UserDTO.class));
+        }
 
     }
 
