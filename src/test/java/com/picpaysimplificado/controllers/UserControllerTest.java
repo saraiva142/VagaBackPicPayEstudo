@@ -1,5 +1,6 @@
 package com.picpaysimplificado.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.picpaysimplificado.domain.user.User;
 import com.picpaysimplificado.domain.user.UserType;
@@ -15,10 +16,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -111,6 +115,51 @@ class UserControllerTest {
 //            verify(userService, never()).createUser(any(UserDTO.class));
 //        }
 
+    }
+
+    @Nested
+    class getAllUsers {
+
+        @Test
+        @DisplayName("Should get all users with success and return 200")
+        void getAllUsersWithSuccess() throws Exception {
+            //Arrange
+            Long id = 1L;
+            User user1 = new User();
+            user1.setId(id);
+            user1.setFirstname("João Victor");
+            user1.setLastname("Aquino Saraiva");
+            user1.setEmail("joao@email.com");
+            user1.setBalance(new BigDecimal(100));
+            user1.setDocument("123456789");
+            user1.setUserType(UserType.COMMON);
+
+            User user2 = new User();
+            user2.setFirstname("First Name");
+            user2.setLastname("Last Name");
+            user2.setEmail("first@email.com");
+            user2.setBalance(new BigDecimal(190));
+            user2.setDocument("123456786");
+            user2.setUserType(UserType.COMMON);
+
+            List<User> userList = Arrays.asList(user1, user2);
+
+            when(userService.getAllUsers()).thenReturn(userList);
+
+            //Act & Assert
+            mockMvc.perform(get("/users")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(userList)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[0].id").value(id));
+            
+            assertEquals(user1.getId(), userList.get(0).getId());
+            assertEquals(user2.getId(), userList.get(1).getId());
+            assertEquals(user1.getDocument(), userList.get(0).getDocument());
+            assertEquals(user2.getDocument(), userList.get(1).getDocument());
+
+            verify(userService, times(1)).getAllUsers();
+        }
     }
 
 
