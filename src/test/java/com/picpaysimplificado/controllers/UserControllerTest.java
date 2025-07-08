@@ -160,10 +160,24 @@ class UserControllerTest {
 
             verify(userService, times(1)).getAllUsers();
         }
+
+        @Test
+        @DisplayName("Should return a empty list when are no have users")
+        void getAllUserReturnEmptyList() throws Exception {
+            //Arrange
+            List<User> userList = Arrays.asList();
+
+            when(userService.getAllUsers()).thenReturn(userList);
+
+            //Act & Assert
+            mockMvc.perform(get("/users")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(userList)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$").isArray())
+                    .andExpect(jsonPath("$.length()").value(0));
+            verify(userService, times(1)).getAllUsers();
+        }
     }
 
-
-    @Test
-    void getAllUsers() {
-    }
 }
